@@ -3,7 +3,8 @@ import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.client.methods.HttpGet
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
 import java.io._
-//import org.apache.commons.io.IOUtils
+import scala.util.parsing.json._
+import org.apache.http.params.BasicHttpParams
 
 
 object TwitterPull {
@@ -21,21 +22,23 @@ object TwitterPull {
 
      val request = new HttpGet("https://stream.twitter.com/1.1/statuses/sample.json");
      consumer.sign(request);
-     val client = new DefaultHttpClient();
-     val response = client.execute(request);
+     val params: BasicHttpParams = new BasicHttpParams()
+     val client = new DefaultHttpClient()
+     params.setParameter("q","a")
+     request.setParams(params)
+     val response = client.execute(request)
      println(response.getEntity().isStreaming())
      println(response.getStatusLine().getStatusCode());
-     //lazy val list = read(response.getEntity().getContent());
-     //lazy val length = list prefixLength (_ != '\n')
      val in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))
-     def read(s: BufferedReader): Stream[String] = {
-        s.readLine() #:: read(s)
+     def read(s: BufferedReader): Stream[Map[String, String]] = {
+        val current = s.readLine()
+        def getMap(s: String): Map[String, String] = JSON.parseFull(s).get.asInstanceOf[Map[String, String]]
+        val json = getMap(current).withDefaultValue("")
+        json #:: read(s)//current
     }
     disp(read(in))
-    //println(length)
-    //disp(list)
-     def disp(s: Stream[String]): Int = {
-        println(s apply 1)
+     def disp(s: Stream[Map[String, String]]): Int = {
+        println((s apply 1)("text"))
         disp(s drop 1)
     }
   }
