@@ -24,21 +24,21 @@ object TwitterPull {
      consumer.sign(request);
      val params: BasicHttpParams = new BasicHttpParams()
      val client = new DefaultHttpClient()
-     params.setParameter("q","a")
-     request.setParams(params)
+     //params.setParameter("q","a")
+     //request.setParams(params)
      val response = client.execute(request)
      println(response.getEntity().isStreaming())
      println(response.getStatusLine().getStatusCode());
      val in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))
-     def read(s: BufferedReader): Stream[Map[String, String]] = {
+     def read(s: BufferedReader): Stream[Map[String, Any]] = {
         val current = s.readLine()
-        def getMap(s: String): Map[String, String] = JSON.parseFull(s).get.asInstanceOf[Map[String, String]]
+        def getMap(s: String): Map[String, Any] = JSON.parseFull(s).get.asInstanceOf[Map[String, String]]
         val json = getMap(current).withDefaultValue("")
         json #:: read(s)//current
     }
     disp(read(in))
-     def disp(s: Stream[Map[String, String]]): Int = {
-        println((s apply 1)("text"))
+     def disp(s: Stream[Map[String, Any]]): Int = {
+        println((s apply 1)("retweeted"))
         disp(s drop 1)
     }
   }
