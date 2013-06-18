@@ -16,7 +16,7 @@ object TwitterPull {
       val ConsumerSecret = "eP48ktb201XqviCKwbXN8wRlrwgBnotwO3iYmjgp1zY";
 
 
-  def main(args: Array[String]) {
+  def main(arg: Array[String]) {
 
      val consumer = new CommonsHttpOAuthConsumer(ConsumerKey,ConsumerSecret);
      consumer.setTokenWithSecret(AccessToken, AccessSecret);
