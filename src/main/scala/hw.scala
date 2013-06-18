@@ -36,9 +36,9 @@ object TwitterPull {
         val json = getMap(current).withDefaultValue("")
         json #:: read(s)//current
     }
-    disp(read(in))
+    disp(read(in) filter ((x: Map[String, Any]) => x("lang") == "en"))
      def disp(s: Stream[Map[String, Any]]): Int = {
-        println((s apply 1)("retweeted"))
+        println((s apply 1)("text"))
         disp(s drop 1)
     }
   }
